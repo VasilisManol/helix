@@ -2271,6 +2271,7 @@ fn global_search(cx: &mut Context) {
 
     let config = cx.editor.config();
     let smart_case = config.search.smart_case;
+    let multi_line = config.search.multi_line;
     let file_picker_config = config.file_picker.clone();
 
     let reg = cx.register.unwrap_or('/');
@@ -2300,6 +2301,7 @@ fn global_search(cx: &mut Context) {
                 .collect();
 
             if let Ok(matcher) = RegexMatcherBuilder::new()
+                .multi_line(multi_line)
                 .case_smart(smart_case)
                 .build(input)
             {
@@ -2321,6 +2323,7 @@ fn global_search(cx: &mut Context) {
                 std::thread::spawn(move || {
                     let searcher = SearcherBuilder::new()
                         .binary_detection(BinaryDetection::quit(b'\x00'))
+                        .multi_line(multi_line)
                         .build();
 
                     let mut walk_builder = WalkBuilder::new(search_root);
