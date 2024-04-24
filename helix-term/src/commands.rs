@@ -2239,13 +2239,15 @@ fn global_search(cx: &mut Context) {
         path: PathBuf,
         /// 0 indexed lines
         line_num: usize,
+        matched: String,
     }
 
     impl FileResult {
-        fn new(path: &Path, line_num: usize) -> Self {
+        fn new(path: &Path, line_num: usize, matched: String) -> Self {
             Self {
                 path: path.to_path_buf(),
                 line_num,
+                matched,
             }
         }
     }
@@ -2363,9 +2365,13 @@ fn global_search(cx: &mut Context) {
                             };
 
                             let mut stop = false;
-                            let sink = sinks::UTF8(|line_num, _| {
+                            let sink = sinks::UTF8(|line_num, matched| {
                                 stop = injector
-                                    .push(FileResult::new(entry.path(), line_num as usize - 1))
+                                    .push(FileResult::new(
+                                        entry.path(),
+                                        line_num as usize - 1,
+                                        matched.to_string(),
+                                    ))
                                     .is_err();
 
                                 Ok(!stop)
@@ -2417,7 +2423,13 @@ fn global_search(cx: &mut Context) {
                         let picker = Picker::with_stream(
                             picker,
                             injector,
-                            move |cx, FileResult { path, line_num }, action| {
+                            move |cx,
+                                  FileResult {
+                                      path,
+                                      line_num,
+                                      matched,
+                                  },
+                                  action| {
                                 let doc = match cx.editor.open(path, action) {
                                     Ok(id) => doc_mut!(cx.editor, &id),
                                     Err(e) => {
@@ -2441,7 +2453,9 @@ fn global_search(cx: &mut Context) {
                                 }
                                 let start = text.line_to_char(line_num);
                                 let end = text.line_to_char((line_num + 1).min(text.len_lines()));
-
+                                let end2 = start + matched.len();
+                                log::info!("the old end of the match {}", end);
+                                log::info!("my end of the match {}", end2);
                                 doc.set_selection(view.id, Selection::single(start, end));
                                 if action.align_view(view, doc.id()) {
                                     align_view(doc, view, Align::Center);
@@ -2449,8 +2463,17 @@ fn global_search(cx: &mut Context) {
                             },
                         )
                         .with_preview(
-                            |_editor, FileResult { path, line_num }| {
-                                Some((path.clone().into(), Some((*line_num, *line_num))))
+                            |_editor,
+                             FileResult {
+                                 path,
+                                 line_num,
+                                 matched,
+                             }| {
+                                let no = matched.match_indices("\n").count() - 1;
+                                // This is to be searched with a pattern blbal(?s).*tatata
+                                log::info!("the matched string {}", matched);
+                                log::info!("The line break no is {}", no);
+                                Some((path.clone().into(), Some((*line_num, *line_num + no))))
                             },
                         );
                         compositor.push(Box::new(overlaid(picker)))
