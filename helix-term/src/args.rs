@@ -14,6 +14,7 @@ pub struct Args {
     pub fetch_grammars: bool,
     pub build_grammars: bool,
     pub split: Option<Layout>,
+    pub diff_mode: bool,
     pub verbosity: u64,
     pub log_file: Option<PathBuf>,
     pub config_file: Option<PathBuf>,
@@ -43,6 +44,18 @@ impl Args {
 
         while let Some(arg) = argv.next() {
             match arg.as_str() {
+                "diff" => {
+                    // `hx diff file1 file2` : enter diff mode and collect two files
+                    args.diff_mode = true;
+                    args.split = Some(Layout::Vertical);
+                    for _ in 0..2 {
+                        let next = argv.next().ok_or_else(|| {
+                            anyhow::anyhow!("diff requires two file arguments")
+                        })?;
+                        insert_file_with_position(&next);
+                    }
+                }
+
                 "--" => break, // stop parsing at this point treat the remaining as files
                 "--version" => args.display_version = true,
                 "--help" => args.display_help = true,

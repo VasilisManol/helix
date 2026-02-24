@@ -170,6 +170,8 @@ impl Application {
             // If there are any more files specified, open them
             if files_it.peek().is_some() {
                 let mut nr_of_files = 0;
+                // collect opened file paths to support diff-mode
+                let mut opened_paths: Vec<std::path::PathBuf> = Vec::new();
                 for (file, pos) in files_it {
                     nr_of_files += 1;
                     if file.is_dir() {
@@ -216,6 +218,7 @@ impl Application {
                             })
                             .collect();
                         doc.set_selection(view_id, selection);
+                        opened_paths.push(file.clone());
                     }
                 }
 
@@ -232,6 +235,24 @@ impl Application {
                     // does not affect views without pos since it is at the top
                     let (view, doc) = current!(editor);
                     align_view(doc, view, Align::Center);
+                }
+                // if in diff mode and at least two files were opened, set each
+                // document's diff base to the other file's content so the diff
+                // gutter shows changes between the two files.
+                if args.diff_mode {
+                    if opened_paths.len() >= 2 {
+                        let p1 = opened_paths[0].clone();
+                        let p2 = opened_paths[1].clone();
+                        if let (Some(id1), Some(id2)) = (
+                            editor.document_id_by_path(&p1),
+                            editor.document_id_by_path(&p2),
+                        ) {
+                            let doc2_text = doc!(editor, &id2).text().slice(..).to_string().into_bytes();
+                            doc_mut!(editor, &id1).set_diff_base(doc2_text);
+                            let doc1_text = doc!(editor, &id1).text().slice(..).to_string().into_bytes();
+                            doc_mut!(editor, &id2).set_diff_base(doc1_text);
+                        }
+                    }
                 }
             } else {
                 editor.new_file(Action::VerticalSplit);
