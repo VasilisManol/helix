@@ -73,6 +73,7 @@ FLAGS:
                                    (default file: {})
     -V, --version                  Print version information
     --vsplit                       Split all given files vertically into different windows
+    diff <file1> <file2>           Show side-by-side diff of two files
     --hsplit                       Split all given files horizontally into different windows
     -w, --working-dir <path>       Specify an initial working directory
     +[N]                           Open the first given file at line number N, or the last line, if
