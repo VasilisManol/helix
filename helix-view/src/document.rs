@@ -197,6 +197,8 @@ pub struct Document {
     pub(crate) language_servers: HashMap<LanguageServerName, Arc<Client>>,
 
     diff_handle: Option<DiffHandle>,
+    side_diff_peer: Option<DiffHandle>,
+    side_diff_peer_id: Option<DocumentId>,
     version_control_head: Option<Arc<ArcSwap<Box<str>>>>,
 
     // when document was used for most-recent-used buffer picker
@@ -723,6 +725,8 @@ impl Document {
             modified_since_accessed: false,
             language_servers: HashMap::new(),
             diff_handle: None,
+            side_diff_peer: None,
+            side_diff_peer_id: None,
             config,
             version_control_head: None,
             focused_at: std::time::Instant::now(),
@@ -1463,6 +1467,9 @@ impl Document {
         if let Some(diff_handle) = &self.diff_handle {
             diff_handle.update_document(self.text.clone(), false);
         }
+        if let Some(peer_diff_handle) = &self.side_diff_peer {
+            peer_diff_handle.update_diff_base(self.text.clone());
+        }
 
         // map diagnostics over changes too
         changes.update_positions(self.diagnostics.iter_mut().map(|diagnostic| {
@@ -1876,6 +1883,20 @@ impl Document {
 
     pub fn diff_handle(&self) -> Option<&DiffHandle> {
         self.diff_handle.as_ref()
+    }
+
+    pub fn set_side_diff_peer(&mut self, peer_id: DocumentId, peer_handle: DiffHandle) {
+        self.side_diff_peer = Some(peer_handle);
+        self.side_diff_peer_id = Some(peer_id);
+    }
+
+    pub fn clear_side_diff_peer(&mut self) {
+        self.side_diff_peer = None;
+        self.side_diff_peer_id = None;
+    }
+
+    pub fn side_diff_peer_id(&self) -> Option<DocumentId> {
+        self.side_diff_peer_id
     }
 
     /// Intialize/updates the differ for this document with a new base.

@@ -251,6 +251,14 @@ impl Application {
                             doc_mut!(editor, &id1).set_diff_base(doc2_text);
                             let doc1_text = doc!(editor, &id1).text().slice(..).to_string().into_bytes();
                             doc_mut!(editor, &id2).set_diff_base(doc1_text);
+
+                            if let (Some(handle1), Some(handle2)) = (
+                                doc!(editor, &id1).diff_handle().cloned(),
+                                doc!(editor, &id2).diff_handle().cloned(),
+                            ) {
+                                doc_mut!(editor, &id1).set_side_diff_peer(id2, handle2);
+                                doc_mut!(editor, &id2).set_side_diff_peer(id1, handle1);
+                            }
                         }
                     }
                 }
