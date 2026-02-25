@@ -22,6 +22,7 @@ mod document_colors;
 mod document_highlight;
 mod document_links;
 mod prompt;
+mod side_diff;
 mod signature_help;
 mod snippet;
 mod workspace_trust;
@@ -58,6 +59,7 @@ pub fn setup(config: Arc<ArcSwap<Config>>) -> Handlers {
     snippet::register_hooks(&handlers);
     document_colors::register_hooks(&handlers);
     document_links::register_hooks(&handlers);
+    side_diff::register_hooks(&handlers);
     prompt::register_hooks(&handlers);
     workspace_trust::register_hooks(&handlers);
     handlers
