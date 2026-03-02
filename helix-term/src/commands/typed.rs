@@ -174,6 +174,45 @@ fn open_impl(cx: &mut compositor::Context, args: Args, action: Action) -> anyhow
     Ok(())
 }
 
+fn open_file_for_diff(
+    cx: &mut compositor::Context,
+    arg: &str,
+    action: Action,
+) -> anyhow::Result<DocumentId> {
+    let (path, pos) = crate::args::parse_file(arg);
+    let path = helix_stdx::path::expand_tilde(path);
+    let doc_id = cx.editor.open(&path, action)?;
+    let (view, doc) = current!(cx.editor);
+    let pos = Selection::point(pos_at_coords(doc.text().slice(..), pos, true));
+    doc.set_selection(view.id, pos);
+    align_view(doc, view, Align::Center);
+    Ok(doc_id)
+}
+
+fn setup_side_diff(editor: &mut Editor, left_id: DocumentId, right_id: DocumentId) {
+    let right_text = doc!(editor, &right_id)
+        .text()
+        .slice(..)
+        .to_string()
+        .into_bytes();
+    doc_mut!(editor, &left_id).set_diff_base(right_text);
+
+    let left_text = doc!(editor, &left_id)
+        .text()
+        .slice(..)
+        .to_string()
+        .into_bytes();
+    doc_mut!(editor, &right_id).set_diff_base(left_text);
+
+    if let (Some(handle_left), Some(handle_right)) = (
+        doc!(editor, &left_id).diff_handle().cloned(),
+        doc!(editor, &right_id).diff_handle().cloned(),
+    ) {
+        doc_mut!(editor, &left_id).set_side_diff_peer(right_id, handle_right);
+        doc_mut!(editor, &right_id).set_side_diff_peer(left_id, handle_left);
+    }
+}
+
 fn buffer_close_by_ids_impl(
     cx: &mut compositor::Context,
     doc_ids: &[DocumentId],
@@ -1946,6 +1985,39 @@ fn hsplit_new(cx: &mut compositor::Context, _args: Args, event: PromptEvent) -> 
     Ok(())
 }
 
+fn diff(cx: &mut compositor::Context, args: Args, event: PromptEvent) -> anyhow::Result<()> {
+    if event != PromptEvent::Validate {
+        return Ok(());
+    }
+
+    match args.len() {
+        0 => {
+            let (left_id, right_id, extra) = {
+                let mut view_docs = cx.editor.tree.views().map(|(view, _)| view.doc);
+                (view_docs.next(), view_docs.next(), view_docs.next())
+            };
+            let Some(left_id) = left_id else {
+                bail!("Can only diff two opened windows");
+            };
+            let Some(right_id) = right_id else {
+                bail!("Can only diff two opened windows");
+            };
+            if extra.is_some() {
+                bail!("Can only diff two opened windows");
+            }
+            setup_side_diff(cx.editor, left_id, right_id);
+        }
+        2 => {
+            let left_id = open_file_for_diff(cx, args.get(0).unwrap(), Action::Replace)?;
+            let right_id = open_file_for_diff(cx, args.get(1).unwrap(), Action::VerticalSplit)?;
+            setup_side_diff(cx.editor, left_id, right_id);
+        }
+        _ => bail!("diff requires zero or two file arguments"),
+    }
+
+    Ok(())
+}
+
 fn debug_eval(cx: &mut compositor::Context, args: Args, event: PromptEvent) -> anyhow::Result<()> {
     if event != PromptEvent::Validate {
         return Ok(());
@@ -2876,6 +2948,17 @@ pub const TYPABLE_COMMAND_LIST: &[TypableCommand] = &[
         completer: CommandCompleter::all(completers::filename),
         signature: Signature {
             positionals: (1, None),
+            ..Signature::DEFAULT
+        },
+    },
+    TypableCommand {
+        name: "diff",
+        aliases: &[],
+        doc: "Diff two open windows, or open two files in a vertical split and diff them.",
+        fun: diff,
+        completer: CommandCompleter::positional(&[completers::filename, completers::filename]),
+        signature: Signature {
+            positionals: (0, Some(2)),
             ..Signature::DEFAULT
         },
     },
