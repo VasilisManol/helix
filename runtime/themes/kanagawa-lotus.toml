@@ -6,7 +6,7 @@
 
 ## User interface
 "ui.selection" = { bg = "lotusBlue1" }
-"ui.selection.primary" = { bg = "lotusBlue1" }
+"ui.selection.primary" = { bg = "lotusInk2"}
 "ui.background" = { fg = "lotusInk0", bg = "lotusWhite0" }
 
 "ui.linenr" = { fg = "lotusInk1" }
@@ -17,7 +17,8 @@
 "ui.virtual.ruler" = { bg = "lotusWhite1" }
 "ui.virtual.inlay-hint" = "lotusInk2"
 "ui.virtual.jump-label" = { fg = "lotusRed", modifiers = ["bold"] }
-"ui.virtual.whitespace" = { fg = "lotusWhite2" }
+"ui.virtual.whitespace" = { fg = "lotusWhite1" }
+"ui.virtual.indent-guide" = { fg = "lotusWhite1" }
 
 "ui.statusline" = { fg = "lotusInk0", bg = "lotusWhite2" }
 "ui.statusline.inactive" = { fg = "lotusInk1", bg = "lotusWhite2" }
@@ -38,7 +39,7 @@
 "ui.cursor" = { fg = "lotusSuperBlue", bg = "lotusInk3" }
 "ui.cursor.primary" = { fg = "lotusSuperBlue", bg = "lotusPink" }
 "ui.cursor.match" = { fg = "lotusRed", modifiers = ["bold"] }
-"ui.highlight" = { fg = "lotusInk0", bg = "lotusBlue1" }
+"ui.highlight" = { bg = "lotusWhite2" }
 "ui.menu" = { fg = "lotusInk0", bg = "lotusBlue1" }
 "ui.menu.selected" = { fg = "lotusWhite0", bg = "lotusBlue3", modifiers = ["bold"] }
 "ui.menu.scroll" = { fg = "lotusInk0", bg = "lotusBlue1" }
@@ -98,11 +99,11 @@ hint = "lotusGreen"
 "special" = { fg = "lotusSuperPink" }
 
 ## Markup modifiers
-"markup.heading" = { fg = "lotusBlue3", modifiers = ["bold"] }
-"markup.heading.marker" = "lotusBlue3"
-"markup.heading.1" = { fg = "lotusYellow", modifiers = ["bold"] }
-"markup.heading.2" = { fg = "lotusBlue3", modifiers = ["bold"] }
-"markup.heading.3" = { fg = "lotusSuperAqua", modifiers = ["bold"] }
+"markup.heading" = { fg = "lotusViolet", modifiers = ["bold"] }
+"markup.heading.marker" = "lotusViolet"
+"markup.heading.1" = { fg = "lotusAutumnRed", modifiers = ["bold"] }
+"markup.heading.2" = { fg = "lotusCyan", modifiers = ["bold"] }
+"markup.heading.3" = { fg = "lotusBlue3", modifiers = ["bold"] }
 "markup.list" = { fg = "lotusSuperPink" }
 "markup.bold" = { modifiers = ["bold"] }
 "markup.italic" = { modifiers = ["italic"] }

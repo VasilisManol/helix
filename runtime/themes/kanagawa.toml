@@ -7,7 +7,7 @@
 # because of some theming differences, it's not an exact copy of the original.
 
 ## User interface
-"ui.selection" = { bg = "waveBlue2" }
+"ui.selection" = { bg = "waveBlue1" }
 "ui.selection.primary" = { bg = "waveBlue2" }
 "ui.background" = { fg = "fujiWhite", bg = "sumiInk3" }
 
@@ -19,6 +19,8 @@
 "ui.virtual.ruler" = { bg = "sumiInk4" }
 "ui.virtual.inlay-hint" = "sumiInk6"
 "ui.virtual.jump-label" = { fg = "peachRed", modifiers = ["bold"] }
+"ui.virtual.indent-guide" = { fg = "sumiInk4" }
+"ui.virtual.whitespace" = "sumiInk4"
 
 "ui.statusline" = { fg = "oldWhite", bg = "sumiInk0" }
 "ui.statusline.inactive" = { fg = "fujiGray", bg = "sumiInk0" }
@@ -38,9 +40,9 @@
 "ui.text.focus" = { fg = "fujiWhite", bg = "waveBlue2", modifiers = ["bold"] }
 
 "ui.cursor" = { fg = "waveBlue1", bg = "waveAqua2" }
-"ui.cursor.primary" = { fg = "waveBlue1", bg = "fujiWhite" }
+"ui.cursor.primary" = { fg = "waveBlue1", bg = "sakuraPink" }
 "ui.cursor.match" = { fg = "waveRed", modifiers = ["bold"] }
-"ui.highlight" = { fg = "fujiWhite", bg = "waveBlue2" }
+"ui.highlight" = { bg = "sumiInk5" }
 "ui.menu" = { fg = "fujiWhite", bg = "waveBlue1" }
 "ui.menu.selected" = { fg = "fujiWhite", bg = "waveBlue2", modifiers = ["bold"] }
 "ui.menu.scroll" = { fg = "oldWhite", bg = "waveBlue1" }
@@ -102,9 +104,9 @@ hint = "waveAqua1"
 ## Markup modifiers
 "markup.heading" = { fg = "springViolet2", modifiers = ["bold"] }
 "markup.heading.marker" = "springViolet2"
-"markup.heading.1" = { fg = "carpYellow", modifiers = ["bold"] }
-"markup.heading.2" = { fg = "crystalBlue", modifiers = ["bold"] }
-"markup.heading.3" = { fg = "waveAqua2", modifiers = ["bold"] }
+"markup.heading.1" = { fg = "autumnRed", modifiers = ["bold"] }
+"markup.heading.2" = { fg = "waveAqua2", modifiers = ["bold"] }
+"markup.heading.3" = { fg = "crystalBlue", modifiers = ["bold"] }
 "markup.list" = "sakuraPink"
 "markup.bold" = { modifiers = ["bold"] }
 "markup.italic" = { modifiers = ["italic"] }
@@ -112,7 +114,7 @@ hint = "waveAqua1"
 "markup.link.text" = { fg = "springBlue" }
 "markup.link.url" = { fg = "lightBlue" }
 "markup.link.label" = "surimiOrange"
-"markup.quote" = "oniViolet2"
+"markup.quote" = { fg = "oniViolet2", modifiers = ["italic"] }
 "markup.raw" = "springGreen"
 
 [palette]
